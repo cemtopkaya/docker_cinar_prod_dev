@@ -1,0 +1,216 @@
+{
+    "_comment": "The unit for time period is milliseconds.",
+    "date": "2020-Apr-13",
+    "author": "Merve KESENBAS",
+
+    "General": {
+        "NumberofServingServerThreads": 4,
+        "ClientCount": 4,
+        "ClientTimeout": 3000,
+        "HomePlmnId": {
+            "mcc": "001",
+            "mnc": "001"
+        }
+    },
+
+    "Security": {
+        "TLSSecure": true,
+        "JWTAuthenticate": true,
+        "MutualAuthenticate": false,
+        "OAuth2": {
+            "PrivateKey": "certificate\/jwt.key",
+            "PublicKey": "certificate\/jwt.pub"
+        },
+        "TLS": {
+            "Certificate": "certificate\/localhost.crt",
+            "PrivateKey": "certificate\/localhost.key"
+        }
+    },
+
+    "Logging": {
+        "Directory": "\/var\/log\/cinar\/nssf\/",
+        "DisplayLog": true,
+        "FileName": "NSSF",
+        "LogLevel": "DEBUG"
+    },
+
+    "NRF": [
+        {
+            "IPAddress": "10.10.23.8",
+            "ClientCount": 4,
+            "ClientTimeout": 3000,
+            "NfmServicePort": 8001,
+            "DiscServicePort": 8006,
+            "OAuth2ServicePort": 8007,
+            "TAccessTokenPeriod": 10000,
+            "TCheckPeriod": 60000,
+            "TDiscoveryPeriod": 3000,
+            "TRetryPeriod": 3000
+        }
+    ],
+
+    "Database": {
+        "DatabaseType": "MONGO",
+        "Server": "10.10.21.12",
+        "Port": 30558,
+        "DatabaseName": "cinarnssftest",
+        "UserName": "cnrusr",
+        "Password": "P5vKG6vE",
+        "ConnectionRetryPeriod": 60000,
+        "Tables": [
+            "cinarnsicollection",
+            "cinarnssrulescollection",
+            "cinarconfigurednssaicollection",
+            "cinaramfavailabilitycollection",
+            "cinarnssfsubscinarcollection"
+        ],
+        "ConnectionPoolSize": 4,
+        "ConnectionTimeout": 1000,
+        "ServerSelectionTimeout": 1000,
+        "SocketTimeout": 1000
+    },
+
+    "AdditionalNFServices": [
+        {
+            "allowedNfDomains": [],
+            "allowedNfTypes": [],
+            "allowedNssais": [],
+            "allowedPlmns": [],
+            "apiPrefix": "",
+            "capacity": 0,
+            "defaultNotificationSubscriptions": [],
+            "fqdn": "",
+            "interPlmnFqdn": "",
+            "ipEndPoints": [
+                {
+                    "ipv4Address": "10.10.23.8",
+                    "ipv6Address": "",
+                    "port": 8102,
+                    "transport": ""
+                }
+            ],
+            "load": 0,
+            "nfServiceStatus": "REGISTERED",
+            "priority": 0,
+            "recoveryTime": "",
+            "scheme": "http",
+            "serviceInstanceId": "81fdab8a-8605-11ea-bc55-0242ac130003",
+            "serviceName": "",
+            "supportedFeatures": "",
+            "versions": [
+                {
+                    "apiFullVersion": "v1",
+                    "apiVersionInUri": "/nssf-configuration/v1",
+                    "expiry": ""
+                }
+            ]
+        },
+        {
+            "allowedNfDomains": [],
+            "allowedNfTypes": [],
+            "allowedNssais": [],
+            "allowedPlmns": [],
+            "apiPrefix": "",
+            "capacity": 0,
+            "defaultNotificationSubscriptions": [],
+            "fqdn": "",
+            "interPlmnFqdn": "",
+            "ipEndPoints": [
+                {
+                    "ipv4Address": "0.0.0.0",
+                    "ipv6Address": "",
+                    "port": 8103,
+                    "transport": ""
+                }
+            ],
+            "load": 0,
+            "nfServiceStatus": "REGISTERED",
+            "priority": 0,
+            "recoveryTime": "",
+            "scheme": "https",
+            "serviceInstanceId": "81fdab8a-8605-11ea-bc55-0242ac130003",
+            "serviceName": "",
+            "supportedFeatures": "",
+            "versions": [
+                {
+                    "apiFullVersion": "v1",
+                    "apiVersionInUri": "/nssf-settings/v1",
+                    "expiry": ""
+                }
+            ]
+        },
+        {
+            "allowedNfDomains": [],
+            "allowedNfTypes": [],
+            "allowedNssais": [],
+            "allowedPlmns": [],
+            "apiPrefix": "",
+            "capacity": 0,
+            "defaultNotificationSubscriptions": [],
+            "fqdn": "",
+            "interPlmnFqdn": "",
+            "ipEndPoints": [
+                {
+                    "ipv4Address": "10.10.23.8",
+                    "ipv6Address": "",
+                    "port": 8104,
+                    "transport": ""
+                }
+            ],
+            "load": 0,
+            "nfServiceStatus": "REGISTERED",
+            "priority": 0,
+            "recoveryTime": "",
+            "scheme": "http",
+            "serviceInstanceId": "81fdab8a-8605-11ea-bc55-0242ac130003",
+            "serviceName": "",
+            "supportedFeatures": "",
+            "versions": [
+                {
+                    "apiFullVersion": "v1",
+                    "apiVersionInUri": "/metrics",
+                    "expiry": ""
+                }
+            ]
+        }
+    ],
+
+    "ServiceSettings": {
+        "AlarmServiceName": "nnssf-nsselection",
+        "NumberofIOServiceThreads": 6,
+        "NSSelectionService": {
+            "ServicePort": 8100,
+            "NssfReroutingOption": "OPTION_A"
+        },
+        "AvaliabilityService": {
+            "ServicePort": 8101,
+            "TSubscriberValidityPeriod": 3600000
+        }
+    },
+
+    "RoamingPlmns" : [
+        {
+            "mcc":  "001",
+            "mnc":  "001",
+            "v_sst": "1",
+            "v_sd": "abc",
+            "h_sst": "1",
+            "h_sd":  "def",
+            "NFDiscoveryUri": "https://10.10.10.10:8006",
+            "AccessTokenUri": "https://10.10.10.10:8007",
+            "NFManagementUri": "https://10.10.10.10:8001"
+        },
+        {
+            "mcc":  "003",
+            "mnc":  "004",
+            "v_sst": "2",
+            "v_sd": "DEF",
+            "h_sst":  "2",
+            "h_sd":   "ABC",
+            "NFDiscoveryUri": "https://10.10.10.10:8006",
+            "AccessTokenUri": "https://10.10.10.10:8007",
+            "NFManagementUri": "https://10.10.10.10:8001"
+        }
+    ]
+}
+

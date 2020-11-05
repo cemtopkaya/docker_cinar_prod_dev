@@ -1,0 +1,28 @@
+FROM ubuntu:xenial
+
+RUN echo "deb [trusted=yes] http://192.168.13.47/debs/ amd64/" >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get -y install \
+        python \
+        libncurses5 \
+        libxml2 \
+        # libreadline \
+        libreadline-dev \
+        libssl-dev \
+        libsasl2-dev \
+        uuid  \
+        dpdk \
+        dkms \
+        nettle-dev \
+        libicu55  \
+        boost-all  \
+        certificate  \
+        cinarloggersink  \
+        cpp-jwt  \
+        g3log  \
+        libevent  \
+        libnghttp2-asio  \
+        mongo-c-driver  \
+        mongo-cxx-driver  \
+        nlohmann-json  \
+        libprometheuscpp  
