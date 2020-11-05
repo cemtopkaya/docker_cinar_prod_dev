@@ -1,0 +1,54 @@
+FROM ubuntu:xenial
+
+RUN echo "deb [trusted=yes] http://192.168.13.47/debs/ amd64/" >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get -y install \
+        python \
+        libncurses5-dev \
+        libxml2-dev \
+        libreadline-dev \
+        libssl-dev \
+        libsasl2-dev \
+        uuid-dev  \
+        dpdk \
+        dkms \
+        nettle-dev \
+        libicu55 --allow-unauthenticated \
+        boost-all  --allow-unauthenticated \
+        boost-all-dev --allow-unauthenticated \
+        certificate  --allow-unauthenticated \
+        cinarloggersink  --allow-unauthenticated \
+        cpp-jwt  --allow-unauthenticated \
+        g3log  --allow-unauthenticated \
+        libevent  --allow-unauthenticated \
+        libnghttp2-asio  --allow-unauthenticated \
+        mongo-c-driver  --allow-unauthenticated \
+        mongo-cxx-driver  --allow-unauthenticated \
+        nlohmann-json  --allow-unauthenticated \
+        libprometheuscpp  --allow-unauthenticated 
+        
+        # cnr
+RUN  apt-get -y install \
+        cinarcodegenerator --allow-unauthenticated \
+        cinarframework --allow-unauthenticated \
+        cinarnnrfaccesstoken.15.201906-Interworking --allow-unauthenticated \
+        cinarnnrfnfdiscovery.15.201906-Interworking --allow-unauthenticated \
+        cinarnnrfnfmanagement.15.201906-Interworking --allow-unauthenticated \
+        cinarnnssfnssaiavailability.15.201906-Interworking --allow-unauthenticated \
+        cinarnnssfnsselection.15.201906-Interworking --allow-unauthenticated \
+        cinarnnefnorthboundassessionwithqos.15.201906-Interworking --allow-unauthenticated \
+        cinarnnefnorthboundcpprovisioning.15.201906-Interworking --allow-unauthenticated \
+        cinarnnefnorthbounddevicetriggering.15.201906-Interworking --allow-unauthenticated \
+        cinarnnefnorthboundmonitoringevent.15.201906-Interworking --allow-unauthenticated \
+        cinarnnefnorthboundpfdmanagement.15.201906-Interworking  --allow-unauthenticated \
+        cinarnnefnorthboundtrafficinfluence.15.201906-Interworking  --allow-unauthenticated \
+        cinarnnefpfdmanagement.15.201906-Interworking  --allow-unauthenticated
+
+RUN  echo "/opt/cinar/lib" > /etc/ld.so.conf.d/cinar.conf && \
+     /sbin/ldconfig
+
+RUN apt clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV container docker
+ENTRYPOINT ["/sbin/init"]

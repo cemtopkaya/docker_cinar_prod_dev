@@ -1,0 +1,132 @@
+# docker build -t cinar/base -f Dockerfile.cinar.base --no-cache .
+# docker run --name=cp --rmi -d cinar/prod 
+# docker exec -it cp bash
+
+# "apt update" komutuyla /etc/apt/source.list dosyasında tanımlı repoların paket listesi çekilir
+# ve /var/lib/apt/lists/ dizinine dosyalanır. Böylece apt install xxx_paketi dediğimizde uzak sunucuda sorgulanmaz
+# Tekrar tekrar "apt update" yapmamak için önceki yansıdaki repolara göre oluşturulmuş paket listelerini çekeceğiz
+# COPY --from=prod /var/lib/apt/lists/* /var/lib/apt/lists/
+# Önceki yansıyı multi-stage yapısında bağlıyoruz
+FROM cinar/prod:latest as prod
+
+FROM cinar/prod:latest
+
+#--------------- Miras ile gelenler -------------------------------
+# Aşağıdaki satır FROM ile miras alınan yansıdan geldiği için tekrar eklemeye gerek yok!
+# RUN echo "deb [trusted=yes] http://192.168.13.47/debs/ amd64/" >> /etc/apt/sources.list && \
+# 
+# multi-stage ile farklı bir yansıdaki dosyalar bu yansının içine kopyalanacağı için apt update gereksiz olacak
+# COPY --from=prod /var/lib/apt/lists/* /var/lib/apt/lists/
+#-------------------------------------------------------------------
+COPY --from=prod /var/lib/apt/* /var/lib/apt/
+
+# Aşağıdaki hata ve çözümü:
+# debconf: delaying package configuration, since apt-utils is not installed 
+#
+# apt-utils uygulamasını yükledikten sonra diğer apt yüklemelerinde -y komutuna gerek kalmıyor.
+# apt-utils uygulaması DEBIAN_FRONTEND ortam değişkenlerine bakarak diğer yüklemelerin cevaplanmasını sağlıyor.
+# DEBIAN_FRONTEND=noninteractive argumanı tanımlıyor, apt-utils yüklüyoruz
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt install --assume-yes apt-utils
+
+# Çınar çatısı kuruluyor
+RUN apt install cinarframework 
+
+# NRF
+RUN apt install cinarnnrfaccesstoken.15.201906-Interworking
+RUN apt install cinarnnrfnfdiscovery.15.201906-Interworking
+RUN apt install cinarnnrfnfmanagement.15.201906-Interworking
+
+# NSSF
+RUN apt install cinarnnssfnssaiavailability.15.201906-Interworking 
+RUN apt install cinarnnssfnsselection.15.201906-Interworking
+
+# NEF
+RUN apt install cinarnnefnorthboundassessionwithqos.15.201906-Interworking
+RUN apt install cinarnnefnorthboundcpprovisioning.15.201906-Interworking
+RUN apt install cinarnnefnorthbounddevicetriggering.15.201906-Interworking
+RUN apt install cinarnnefnorthboundmonitoringevent.15.201906-Interworking
+RUN apt install cinarnnefnorthboundpfdmanagement.15.201906-Interworking
+RUN apt install cinarnnefnorthboundtrafficinfluence.15.201906-Interworking
+RUN apt install cinarnnefpfdmanagement.15.201906-Interworking
+RUN apt install cinarnpcfpolicyauthorization.15.201906-Interworking
+RUN apt install cinarnudrdatarepository.15.201906-Interworking
+RUN apt install cinarnudmsdm.15.201906-Interworking
+# RUN apt install cinarnamfeventexposure.15.201906-interworking
+RUN apt install cinarnsmfeventexposure.15.201906-interworking
+RUN apt install cinarnudmuecm.15.201906-Interworking
+
+# NSSF Bağımlılıkları 
+# ldd ./nssf/cnrnssf  | grep /opt/cinar/lib | cut -d '(' -f1
+#        libCinarFramework.so                        => /opt/cinar/lib/libCinarFramework.so
+#        libCinarNnrfNFManagement.15.201906.so       => /opt/cinar/lib/libCinarNnrfNFManagement.15.201906.so
+#        libCinarNnrfNFDiscovery.15.201906.so        => /opt/cinar/lib/libCinarNnrfNFDiscovery.15.201906.so
+#        libCinarNnrfAccessToken.15.201906.so        => /opt/cinar/lib/libCinarNnrfAccessToken.15.201906.so
+#        libCinarNnssfNSSAIAvailability.15.201906.so => /opt/cinar/lib/libCinarNnssfNSSAIAvailability.15.201906.so
+#        libCinarNnssfNSSelection.15.201906.so       => /opt/cinar/lib/libCinarNnssfNSSelection.15.201906.so
+
+# NRF Bağımlılıkları 
+# ldd ./nrf/cnrnrf  | grep /opt/cinar/lib | cut -d '(' -f1
+#        libCinarFramework.so                  => /opt/cinar/lib/libCinarFramework.so
+#        libCinarNnrfNFManagement.15.201906.so => /opt/cinar/lib/libCinarNnrfNFManagement.15.201906.so
+#        libCinarNnrfNFDiscovery.15.201906.so  => /opt/cinar/lib/libCinarNnrfNFDiscovery.15.201906.so
+#        libCinarNnrfAccessToken.15.201906.so  => /opt/cinar/lib/libCinarNnrfAccessToken.15.201906.so
+
+# NEF Bağımlılıkları 
+# ldd cnrnef  | grep /opt/cinar/lib | cut -d '(' -f1
+#        libCinarFramework.so                         => /opt/cinar/lib/libCinarFramework.so
+#        libCinarNnrfNFManagement.15.201906.so        => /opt/cinar/lib/libCinarNnrfNFManagement.15.201906.so
+#        libCinarNnrfNFDiscovery.15.201906.so         => /opt/cinar/lib/libCinarNnrfNFDiscovery.15.201906.so
+#        libCinarNnrfAccessToken.15.201906.so         => /opt/cinar/lib/libCinarNnrfAccessToken.15.201906.so
+#        libCinarNnefPFDmanagement.15.201906.so       => /opt/cinar/lib/libCinarNnefPFDmanagement.15.201906.so
+#        libCinarNpcfPolicyAuthorization.15.201906.so => /opt/cinar/lib/libCinarNpcfPolicyAuthorization.15.201906.so
+#        libCinarNudrDataRepository.15.201906.so      => /opt/cinar/lib/libCinarNudrDataRepository.15.201906.so
+#        libCinarNudmSDM.15.201906.so                 => /opt/cinar/lib/libCinarNudmSDM.15.201906.so
+#        libCinarNamfEventExposure.15.201906.so       => /opt/cinar/lib/libCinarNamfEventExposure.15.201906.so
+#        libCinarNsmfEventExposure.15.201906.so       => /opt/cinar/lib/libCinarNsmfEventExposure.15.201906.so
+#        libCinarNudmUECM.15.201906.so                => /opt/cinar/lib/libCinarNudmUECM.15.201906.so
+
+# NF paketleri xxx.15.201906.so kütüphaneleriyle derlendiği için
+# xxx.15.201906-Interworking.so kütüphanelerinin adlarını değiştiriyoruz
+WORKDIR /opt/cinar/lib
+# NRF
+RUN mv libCinarNnrfAccessToken.15.201906-Interworking.so                 libCinarNnrfAccessToken.15.201906.so
+RUN mv libCinarNnrfNFDiscovery.15.201906-Interworking.so                 libCinarNnrfNFDiscovery.15.201906.so
+RUN mv libCinarNnrfNFManagement.15.201906-Interworking.so                libCinarNnrfNFManagement.15.201906.so
+
+# NSSF
+RUN mv libCinarNnssfNSSAIAvailability.15.201906-Interworking.so          libCinarNnssfNSSAIAvailability.15.201906.so
+RUN mv libCinarNnssfNSSelection.15.201906-Interworking.so                libCinarNnssfNSSelection.15.201906.so
+
+# NEF
+RUN mv libCinarNnefPFDmanagement.15.201906-Interworking.so               libCinarNnefPFDmanagement.15.201906.so
+RUN mv libCinarNnefNorthboundAsSessionWithQos.15.201906-Interworking.so  libCinarNnefNorthboundAsSessionWithQos.15.201906.so  
+RUN mv libCinarNnefNorthboundCpProvisioning.15.201906-Interworking.so    libCinarNnefNorthboundCpProvisioning.15.201906.so    
+RUN mv libCinarNnefNorthboundDeviceTriggering.15.201906-Interworking.so  libCinarNnefNorthboundDeviceTriggering.15.201906.so  
+RUN mv libCinarNnefNorthboundMonitoringEvent.15.201906-Interworking.so   libCinarNnefNorthboundMonitoringEvent.15.201906.so   
+RUN mv libCinarNnefNorthboundPFDmanagement.15.201906-Interworking.so     libCinarNnefNorthboundPFDmanagement.15.201906.so     
+RUN mv libCinarNnefNorthboundTrafficInfluence.15.201906-Interworking.so  libCinarNnefNorthboundTrafficInfluence.15.201906.so                 
+RUN mv libCinarNpcfPolicyAuthorization.15.201906-Interworking.so         libCinarNpcfPolicyAuthorization.15.201906.so
+RUN mv libCinarNudrDataRepository.15.201906-Interworking.so              libCinarNudrDataRepository.15.201906.so
+RUN mv libCinarNudmSDM.15.201906-Interworking.so                         libCinarNudmSDM.15.201906.so
+# RUN mv libCinarNamfEventExposure.15.201906-Interworking.so               libCinarNamfEventExposure.15.201906.so
+RUN mv libCinarNsmfEventExposure.15.201906-Interworking.so               libCinarNsmfEventExposure.15.201906.so
+RUN mv libCinarNudmUECM.15.201906-Interworking.so                        libCinarNudmUECM.15.201906.so
+
+# ldconfig, kütüphanelerin üstbilgisini (header) ve dosya adlarını kontrol ederken hangi sürümlerin bağlantılarına sahip olması gerektiğini belirler.
+# Bunun için "/etc/ld.so.conf" dosyasında belirtilen ve "/lib", "/usr/lib", "/etc/ld.so.conf.d" dizinlerindeki bağlantıları oluşturur ve önbelleği yeniden oluşturur. 
+#
+# "/etc/ld.so.conf" dosyasında "include /etc/ld.so.conf.d/*.conf" satırına bakarak "/etc/ld.so.conf.d/" dizinindeki
+# tüm *.conf uzantılı dosyaların içeriğinde yazılı dizinleri de taracaktır.
+RUN  echo "/opt/cinar/lib" > /etc/ld.so.conf.d/cinar.conf && \
+     /sbin/ldconfig
+
+RUN apt clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Bu yansının bir docker konteyner olduğu bilgisini veriyoruz ve sonraki yansılarda da ortam değikenlerinde $container ile kabuk betiklerinde
+# systemctl start ve systemctl daemon-reload komutlarının çalıştırılmasını $container ortam değişkeniyle yönetiyor olacağız.
+ENV container docker
+
+# Bu yansıda ENTRYPOINT değerine systemd çalışsın diyoruz ve sonraki yansılar eğer yeni bir ENTRYPOINT tanımı yapmazlarsa systemd başlatılacak.
+ENTRYPOINT ["/sbin/init"]
