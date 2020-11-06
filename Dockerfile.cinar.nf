@@ -56,3 +56,4 @@ RUN rm $(cat nf_paket_filename.txt) && rm -r $NF_PAKET_KOPYALANACAK_DIZIN
 
 # .bashrc bir şekilde gitmişse yeniden varsayılanı yaratıyoruz.
 RUN if [ ! -f "/root/.bashrc" ]; then /bin/cp /etc/skel/.bashrc ~/; fi
+ENTRYPOINT ["/sbin/init"]
